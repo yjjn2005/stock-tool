@@ -202,12 +202,18 @@ let D = null;
 let db = null, dbRef = null, applyingRemote = false;
 
 /* ===== 구버전(탭별 목록) 데이터 → 공유 목록으로 자동 이관 ===== */
+const asArr = x => Array.isArray(x) ? x.filter(Boolean) : (x && typeof x==='object' ? Object.values(x).filter(Boolean) : []);
 function migrate(d){
-  if(d && d.v === 2 && Array.isArray(d.kr) && Array.isArray(d.us)) return d;
-  if(!d || (!d.buyKR && !d.sellKRq && !d.kr)) return JSON.parse(JSON.stringify(seed));
-  if(d.v === 2) { d.kr = d.kr||[]; d.us = d.us||[]; return d; }
+  if(!d) return JSON.parse(JSON.stringify(seed));
+  if(d.v === 2){
+    d.kr = asArr(d.kr).map(s=>({...newStock('kr'),...s}));
+    d.us = asArr(d.us).map(s=>({...newStock('us'),...s}));
+    if(!d.kr.length && !d.us.length) return JSON.parse(JSON.stringify(seed));
+    return d;
+  }
+  if(!d.buyKR && !d.sellKRq && !d.buyUS && !d.sellKRa && !d.sellUSq && !d.sellUSa) return JSON.parse(JSON.stringify(seed));
   const out = {fxManual:d.fxManual??null, fxAuto:d.fxAuto??null, v:2, kr:[], us:[]};
-  const merge = (arr, market, map) => (arr||[]).forEach(r=>{
+  const merge = (arr, market, map) => asArr(arr).forEach(r=>{
     if(!r || (!r.code && !r.name)) return;
     const list = out[market];
     let s = list.find(x => x.code && r.code && x.code.toUpperCase()===String(r.code).toUpperCase() && x.name===r.name);
@@ -220,6 +226,7 @@ function migrate(d){
   merge(d.buyUS,'us',(r,s)=>{ s.buyAmount=r.amount??s.buyAmount; s.buyCur=r.cur||'KRW'; s.auto=r.auto??s.auto; s.manual=r.manual??s.manual; });
   merge(d.sellUSq,'us',(r,s)=>{ s.hold=r.hold??s.hold; s.sellQty=r.qty??r.hold??s.sellQty; s.cost=r.cost??s.cost; s.auto=r.auto??s.auto; s.manual=r.manual??s.manual; });
   merge(d.sellUSa,'us',(r,s)=>{ s.target=r.target??s.target; s.targetCur=r.cur||'KRW'; s.hold=s.hold??r.hold; s.auto=r.auto??s.auto; });
+  if(!out.kr.length && !out.us.length) return JSON.parse(JSON.stringify(seed));
   return out;
 }
 
