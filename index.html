@@ -52,7 +52,6 @@
   .subkrw{font-size:.72rem; color:var(--sub); display:block;}
   .rowbtns{display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;}
   tfoot td{background:#2b2413; color:var(--gold); font-weight:700;}
-  .stale{opacity:.55;}
   #toast{position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#000c; color:#fff; padding:10px 20px; border-radius:20px; font-size:.85rem; display:none; z-index:99;}
   @media(max-width:700px){ body{padding:6px;} table{font-size:.78rem;} }
 </style>
@@ -83,30 +82,28 @@
 <!-- ===== 매수 국내 ===== -->
 <div class="panel" id="tab-buyKR">
   <h2>매수 계산기 — 국내 (KRW)</h2>
-  <div class="hint">투자금액 ÷ 현재가 = 매수 가능 주수. 파란 칸이 입력 항목이며 수동 현재가를 입력하면 자동 현재가보다 우선 적용됩니다.</div>
+  <div class="hint">모든 탭이 같은 종목 목록을 공유합니다. 여기서 종목을 추가·삭제하면 매도 탭에도 반영됩니다. 수동 현재가 입력 시 자동가보다 우선.</div>
   <div class="tblwrap"><table id="tbl-buyKR">
     <thead><tr><th>종목명</th><th>종목번호</th><th>투자금액 (원)</th><th>자동 현재가</th><th>수동 현재가</th><th>적용가</th><th>매수가능 주수</th><th>실제 사용금액</th><th>잔여금액</th><th></th></tr></thead>
-    <tbody></tbody>
-    <tfoot></tfoot>
+    <tbody></tbody><tfoot></tfoot>
   </table></div>
   <div class="rowbtns">
-    <button class="small" onclick="addRow('buyKR')">＋ 종목 추가</button>
-    <button class="small ghost" onclick="resetTab('buyKR')">🗑 초기화</button>
+    <button class="small" onclick="addRow('kr')">＋ 종목 추가</button>
+    <button class="small ghost" onclick="clearInputs('kr','buy')">🗑 투자금액 초기화</button>
   </div>
 </div>
 
 <!-- ===== 매수 해외 ===== -->
 <div class="panel" id="tab-buyUS" style="display:none">
   <h2>매수 계산기 — 해외 (USD)</h2>
-  <div class="hint">투자금액을 원화 또는 달러로 입력 → 실시간 환율로 자동 환산하여 매수 가능 주수 계산.</div>
+  <div class="hint">투자금액을 원화 또는 달러로 입력 → 실시간 환율로 자동 환산. 종목 목록은 매도 해외 탭과 공유됩니다.</div>
   <div class="tblwrap"><table id="tbl-buyUS">
     <thead><tr><th>종목명</th><th>티커</th><th>투자금액</th><th>통화</th><th>환산액</th><th>자동 현재가($)</th><th>수동 현재가($)</th><th>적용가($)</th><th>매수가능 주수</th><th>실제 사용금액</th><th>잔여금액</th><th></th></tr></thead>
-    <tbody></tbody>
-    <tfoot></tfoot>
+    <tbody></tbody><tfoot></tfoot>
   </table></div>
   <div class="rowbtns">
-    <button class="small" onclick="addRow('buyUS')">＋ 종목 추가</button>
-    <button class="small ghost" onclick="resetTab('buyUS')">🗑 초기화</button>
+    <button class="small" onclick="addRow('us')">＋ 종목 추가</button>
+    <button class="small ghost" onclick="clearInputs('us','buy')">🗑 투자금액 초기화</button>
   </div>
 </div>
 
@@ -118,12 +115,12 @@
     <button data-sub="amt" onclick="setSellMode('sellKR','amt',this)">금액 기준</button>
   </div>
   <div id="sellKR-qty">
-    <div class="hint">매도 주수 × 현재가 = 매도 예상금액. 취득단가 입력 시 평가손익·수익률 표시.</div>
+    <div class="hint">매도 주수 × 현재가 = 매도 예상금액. 취득단가 입력 시 평가손익·수익률 표시. 종목은 매수 국내 탭과 동일.</div>
     <div class="tblwrap"><table id="tbl-sellKRq">
       <thead><tr><th>종목명</th><th>종목번호</th><th>보유 주수</th><th>매도 주수</th><th>자동 현재가</th><th>수동 현재가</th><th>적용가</th><th>매도 예상금액</th><th>취득단가</th><th>평가손익</th><th>수익률</th><th></th></tr></thead>
       <tbody></tbody><tfoot></tfoot>
     </table></div>
-    <div class="rowbtns"><button class="small" onclick="addRow('sellKRq')">＋ 종목 추가</button><button class="small ghost" onclick="resetTab('sellKRq')">🗑 초기화</button></div>
+    <div class="rowbtns"><button class="small" onclick="addRow('kr')">＋ 종목 추가</button><button class="small ghost" onclick="clearInputs('kr','sellq')">🗑 매도주수 초기화</button></div>
   </div>
   <div id="sellKR-amt" style="display:none">
     <div class="hint">매도 목표금액 ÷ 현재가 = 필요 주수 (올림).</div>
@@ -131,7 +128,7 @@
       <thead><tr><th>종목명</th><th>종목번호</th><th>목표금액 (원)</th><th>자동 현재가</th><th>수동 현재가</th><th>적용가</th><th>필요 주수</th><th>실제 매도금액</th><th>보유 주수</th><th>잔여 주수</th><th></th></tr></thead>
       <tbody></tbody><tfoot></tfoot>
     </table></div>
-    <div class="rowbtns"><button class="small" onclick="addRow('sellKRa')">＋ 종목 추가</button><button class="small ghost" onclick="resetTab('sellKRa')">🗑 초기화</button></div>
+    <div class="rowbtns"><button class="small" onclick="addRow('kr')">＋ 종목 추가</button><button class="small ghost" onclick="clearInputs('kr','sella')">🗑 목표금액 초기화</button></div>
   </div>
 </div>
 
@@ -143,12 +140,12 @@
     <button data-sub="amt" onclick="setSellMode('sellUS','amt',this)">금액 기준</button>
   </div>
   <div id="sellUS-qty">
-    <div class="hint">매도 주수 × 현재가($) = 매도 예상금액. 달러·원화 동시 표시.</div>
+    <div class="hint">매도 주수 × 현재가($) = 매도 예상금액. 달러·원화 동시 표시. 종목은 매수 해외 탭과 동일.</div>
     <div class="tblwrap"><table id="tbl-sellUSq">
       <thead><tr><th>종목명</th><th>티커</th><th>보유 주수</th><th>매도 주수</th><th>자동 현재가($)</th><th>수동 현재가($)</th><th>적용가($)</th><th>매도 예상금액</th><th>취득단가($)</th><th>평가손익</th><th>수익률</th><th></th></tr></thead>
       <tbody></tbody><tfoot></tfoot>
     </table></div>
-    <div class="rowbtns"><button class="small" onclick="addRow('sellUSq')">＋ 종목 추가</button><button class="small ghost" onclick="resetTab('sellUSq')">🗑 초기화</button></div>
+    <div class="rowbtns"><button class="small" onclick="addRow('us')">＋ 종목 추가</button><button class="small ghost" onclick="clearInputs('us','sellq')">🗑 매도주수 초기화</button></div>
   </div>
   <div id="sellUS-amt" style="display:none">
     <div class="hint">목표금액을 원화 또는 달러로 입력 → 필요 매도 주수 계산.</div>
@@ -156,19 +153,17 @@
       <thead><tr><th>종목명</th><th>티커</th><th>목표금액</th><th>통화</th><th>환산액($)</th><th>자동 현재가($)</th><th>수동 현재가($)</th><th>적용가($)</th><th>필요 주수</th><th>실제 매도금액</th><th>보유 주수</th><th>잔여 주수</th><th></th></tr></thead>
       <tbody></tbody><tfoot></tfoot>
     </table></div>
-    <div class="rowbtns"><button class="small" onclick="addRow('sellUSa')">＋ 종목 추가</button><button class="small ghost" onclick="resetTab('sellUSa')">🗑 초기화</button></div>
+    <div class="rowbtns"><button class="small" onclick="addRow('us')">＋ 종목 추가</button><button class="small ghost" onclick="clearInputs('us','sella')">🗑 목표금액 초기화</button></div>
   </div>
 </div>
 
-<div class="hint" style="text-align:center">※ 수수료·세금 미반영 기준 · 시세: Yahoo Finance → 네이버증권 순 자동 조회 · 자동 조회 실패 시 수동 현재가 입력</div>
+<div class="hint" style="text-align:center">※ 매수·매도 모든 탭이 동일 종목 목록 공유 · 수수료·세금 미반영 · 시세: Yahoo Finance → 네이버증권 순 · 자동 조회 실패 시 수동 현재가 입력</div>
 <div id="toast"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
-/* ================= Firebase 설정 =================
-   Firebase 콘솔에서 발급받은 config를 아래에 붙여넣으면
-   모든 기기 실시간 동기화가 활성화됩니다. null이면 로컬 저장. */
+/* ================= Firebase 설정 ================= */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyCla-V8652HHaGd4CHLa3tjExX7jqfjnwU",
   authDomain: "jj-stock-tool.firebaseapp.com",
@@ -179,51 +174,58 @@ const FIREBASE_CONFIG = {
   appId: "1:643726726702:web:aba4ae5551c48d0c2a71bf"
 };
 
-/* ================= 데이터 모델 ================= */
+/* ================= 데이터 모델 =================
+   kr / us 각 하나의 종목 배열을 매수·매도 모든 탭이 공유.
+   종목 필드: name, code, auto, manual(현재가), hold(보유주수), cost(취득단가),
+             buyAmount, buyCur(해외), sellQty(매도주수), target(목표금액), targetCur(해외) */
 const CLIENT_ID = Math.random().toString(36).slice(2);
-const emptyRow = {
-  buyKR:  ()=>({name:'',code:'',amount:null,manual:null,auto:null}),
-  buyUS:  ()=>({name:'',code:'',amount:null,cur:'KRW',manual:null,auto:null}),
-  sellKRq:()=>({name:'',code:'',hold:null,qty:null,manual:null,auto:null,cost:null}),
-  sellKRa:()=>({name:'',code:'',target:null,manual:null,auto:null,hold:null}),
-  sellUSq:()=>({name:'',code:'',hold:null,qty:null,manual:null,auto:null,cost:null}),
-  sellUSa:()=>({name:'',code:'',target:null,cur:'KRW',manual:null,auto:null,hold:null}),
-};
+const newStock = m => ({name:'',code:'',auto:null,manual:null,hold:null,cost:null,
+                        buyAmount:null,buyCur:'KRW',sellQty:null,target:null,targetCur:'KRW',market:m});
 const seed = {
-  fxManual:null, fxAuto:null,
-  buyKR:[
-    {name:'KODEX 미국30년국채액티브(H)',code:'484790',amount:1000000000,manual:null,auto:null},
-    {name:'TIGER 미국나스닥100',code:'133690',amount:100000000,manual:null,auto:null},
+  fxManual:null, fxAuto:null, v:2,
+  kr:[
+    {...newStock('kr'), name:'KODEX 미국30년국채액티브(H)', code:'484790', buyAmount:1000000000},
+    {...newStock('kr'), name:'TIGER 미국나스닥100', code:'133690', buyAmount:100000000},
+    {...newStock('kr'), name:'현대모비스', code:'012330', hold:1429, sellQty:1429, cost:420000, target:300000000},
+    {...newStock('kr'), name:'삼성증권', code:'016360', hold:3007, sellQty:3007, cost:95000},
+    {...newStock('kr'), name:'SK하이닉스', code:'000660', hold:217, sellQty:217, cost:980000},
+    {...newStock('kr'), name:'삼성전자', code:'005930', hold:3724, sellQty:3724, cost:190000, target:50000000},
   ],
-  buyUS:[
-    {name:'티앤씨 앤컴퍼니',code:'TLTW',amount:700000,cur:'USD',manual:null,auto:null},
-    {name:'문앤파인트리',code:'TLTW',amount:130000,cur:'USD',manual:null,auto:null},
-  ],
-  sellKRq:[
-    {name:'현대모비스',code:'012330',hold:1429,qty:1429,manual:null,auto:null,cost:420000},
-    {name:'삼성증권',code:'016360',hold:3007,qty:3007,manual:null,auto:null,cost:95000},
-    {name:'SK하이닉스',code:'000660',hold:217,qty:217,manual:null,auto:null,cost:980000},
-    {name:'삼성전자',code:'005930',hold:3724,qty:3724,manual:null,auto:null,cost:190000},
-  ],
-  sellKRa:[
-    {name:'현대모비스',code:'012330',target:300000000,manual:null,auto:null,hold:1429},
-    {name:'삼성전자',code:'005930',target:50000000,manual:null,auto:null,hold:3724},
-  ],
-  sellUSq:[
-    {name:'NVIDIA',code:'NVDA',hold:50,qty:50,manual:null,auto:null,cost:90},
-    {name:'Apple',code:'AAPL',hold:47,qty:47,manual:null,auto:null,cost:145},
-  ],
-  sellUSa:[
-    {name:'NVIDIA',code:'NVDA',target:10000,cur:'USD',manual:null,auto:null,hold:50},
-    {name:'Apple',code:'AAPL',target:8000,cur:'USD',manual:null,auto:null,hold:47},
+  us:[
+    {...newStock('us'), name:'티앤씨 앤컴퍼니', code:'TLTW', buyAmount:700000, buyCur:'USD'},
+    {...newStock('us'), name:'문앤파인트리', code:'TLTW', buyAmount:130000, buyCur:'USD'},
+    {...newStock('us'), name:'NVIDIA', code:'NVDA', hold:50, sellQty:50, cost:90, target:10000, targetCur:'USD'},
+    {...newStock('us'), name:'Apple', code:'AAPL', hold:47, sellQty:47, cost:145, target:8000, targetCur:'USD'},
   ],
 };
-let D = null;           // 전체 상태
+let D = null;
 let db = null, dbRef = null, applyingRemote = false;
+
+/* ===== 구버전(탭별 목록) 데이터 → 공유 목록으로 자동 이관 ===== */
+function migrate(d){
+  if(d && d.v === 2 && Array.isArray(d.kr) && Array.isArray(d.us)) return d;
+  if(!d || (!d.buyKR && !d.sellKRq && !d.kr)) return JSON.parse(JSON.stringify(seed));
+  if(d.v === 2) { d.kr = d.kr||[]; d.us = d.us||[]; return d; }
+  const out = {fxManual:d.fxManual??null, fxAuto:d.fxAuto??null, v:2, kr:[], us:[]};
+  const merge = (arr, market, map) => (arr||[]).forEach(r=>{
+    if(!r || (!r.code && !r.name)) return;
+    const list = out[market];
+    let s = list.find(x => x.code && r.code && x.code.toUpperCase()===String(r.code).toUpperCase() && x.name===r.name);
+    if(!s){ s = newStock(market); s.name=r.name||''; s.code=r.code||''; list.push(s); }
+    map(r,s);
+  });
+  merge(d.buyKR,'kr',(r,s)=>{ s.buyAmount=r.amount??s.buyAmount; s.auto=r.auto??s.auto; s.manual=r.manual??s.manual; });
+  merge(d.sellKRq,'kr',(r,s)=>{ s.hold=r.hold??s.hold; s.sellQty=r.qty??r.hold??s.sellQty; s.cost=r.cost??s.cost; s.auto=r.auto??s.auto; s.manual=r.manual??s.manual; });
+  merge(d.sellKRa,'kr',(r,s)=>{ s.target=r.target??s.target; s.hold=s.hold??r.hold; s.auto=r.auto??s.auto; });
+  merge(d.buyUS,'us',(r,s)=>{ s.buyAmount=r.amount??s.buyAmount; s.buyCur=r.cur||'KRW'; s.auto=r.auto??s.auto; s.manual=r.manual??s.manual; });
+  merge(d.sellUSq,'us',(r,s)=>{ s.hold=r.hold??s.hold; s.sellQty=r.qty??r.hold??s.sellQty; s.cost=r.cost??s.cost; s.auto=r.auto??s.auto; s.manual=r.manual??s.manual; });
+  merge(d.sellUSa,'us',(r,s)=>{ s.target=r.target??s.target; s.targetCur=r.cur||'KRW'; s.hold=s.hold??r.hold; s.auto=r.auto??s.auto; });
+  return out;
+}
 
 /* ================= 저장/동기화 ================= */
 function loadLocal(){
-  try{ const s = localStorage.getItem('jjStockTool'); if(s) return JSON.parse(s);}catch(e){}
+  try{ const s = localStorage.getItem('jjStockTool'); if(s) return migrate(JSON.parse(s)); }catch(e){}
   return JSON.parse(JSON.stringify(seed));
 }
 let saveTimer=null;
@@ -247,7 +249,8 @@ function initFirebase(){
       badge.textContent = '동기화: ON'; badge.classList.add('on');
       if(v && v.data && v.by !== CLIENT_ID){
         applyingRemote = true;
-        D = v.data; normalize(); renderAll();
+        D = migrate(v.data);
+        renderAll();
         localStorage.setItem('jjStockTool', JSON.stringify(D));
         applyingRemote = false;
       } else if(!v){ dbRef.set({data:D, by:CLIENT_ID, t:Date.now()}); }
@@ -256,9 +259,6 @@ function initFirebase(){
       console.error(err);
     });
   }catch(e){ console.error(e); }
-}
-function normalize(){
-  for(const k of Object.keys(emptyRow)){ if(!Array.isArray(D[k])) D[k]=[]; }
 }
 
 /* ================= 유틸 ================= */
@@ -269,8 +269,7 @@ function fx(){ return D.fxManual || D.fxAuto || null; }
 function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.style.display='block'; clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',2500); }
 function price(r){ return (r.manual!=null && r.manual!=='' && !isNaN(r.manual)) ? Number(r.manual) : r.auto; }
 
-/* ================= 시세 조회 =================
-   브라우저 CORS 우회: 여러 프록시 순차 시도 */
+/* ================= 시세 조회 ================= */
 const PROXIES = [
   u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
   u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
@@ -290,19 +289,12 @@ async function fetchViaProxy(url){
 async function yahooPrice(symbol){
   const txt = await fetchViaProxy(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`);
   if(!txt) return null;
-  try{
-    const j = JSON.parse(txt);
-    return j?.chart?.result?.[0]?.meta?.regularMarketPrice ?? null;
-  }catch(e){ return null; }
+  try{ const j = JSON.parse(txt); return j?.chart?.result?.[0]?.meta?.regularMarketPrice ?? null; }catch(e){ return null; }
 }
 async function naverPrice(code){
   const txt = await fetchViaProxy(`https://m.stock.naver.com/api/stock/${code}/basic`);
   if(!txt) return null;
-  try{
-    const j = JSON.parse(txt);
-    const p = (j.closePrice||'').replace(/,/g,'');
-    return p ? Number(p) : null;
-  }catch(e){ return null; }
+  try{ const j = JSON.parse(txt); const p = (j.closePrice||'').replace(/,/g,''); return p ? Number(p) : null; }catch(e){ return null; }
 }
 async function getKRPrice(code){
   return await yahooPrice(code+'.KS') ?? await yahooPrice(code+'.KQ') ?? await naverPrice(code);
@@ -325,12 +317,10 @@ async function syncFx(){
 async function syncAllPrices(){
   toast('시세 조회 중…');
   document.getElementById('btnPrices').disabled = true;
-  const jobs = [];
-  const cache = {};
+  const jobs = [], cache = {};
   const need = (key, fn) => cache[key] ?? (cache[key] = fn());
-  const krTabs=['buyKR','sellKRq','sellKRa'], usTabs=['buyUS','sellUSq','sellUSa'];
-  for(const t of krTabs) for(const r of D[t]) if(r.code) jobs.push(need('K'+r.code, ()=>getKRPrice(r.code)).then(p=>{ if(p) r.auto=p; }));
-  for(const t of usTabs) for(const r of D[t]) if(r.code) jobs.push(need('U'+r.code.toUpperCase(), ()=>getUSPrice(r.code)).then(p=>{ if(p) r.auto=p; }));
+  for(const r of D.kr) if(r.code) jobs.push(need('K'+r.code, ()=>getKRPrice(r.code)).then(p=>{ if(p) r.auto=p; }));
+  for(const r of D.us) if(r.code) jobs.push(need('U'+r.code.toUpperCase(), ()=>getUSPrice(r.code)).then(p=>{ if(p) r.auto=p; }));
   jobs.push(getFx().then(v=>{ if(v) D.fxAuto=Math.round(v*100)/100; }));
   await Promise.allSettled(jobs);
   save(); renderAll();
@@ -342,8 +332,8 @@ async function syncAllPrices(){
 /* ================= 렌더링 ================= */
 function inp(cls, val, ph, on){ return `<input class="${cls}" value="${val??''}" placeholder="${ph||''}" ${on}>`; }
 function numIn(cls, val, on, step){ return `<input type="number" class="${cls}" value="${val??''}" step="${step||'any'}" ${on}>`; }
-function delBtn(tab,i){ return `<button class="danger" onclick="delRow('${tab}',${i})">✕</button>`; }
-function h(tab,i,f){ return `oninput="upd('${tab}',${i},'${f}',this.value)"`; }
+function delBtn(m,i){ return `<button class="danger" title="모든 탭에서 삭제" onclick="delRow('${m}',${i})">✕</button>`; }
+function h(m,i,f,view){ return `oninput="upd('${m}',${i},'${f}','${view}',this.value)"`; }
 
 function renderFx(){
   document.getElementById('fxAuto').textContent = D.fxAuto ? D.fxAuto.toLocaleString() : '-';
@@ -353,135 +343,150 @@ function renderFx(){
   document.getElementById('fxBadge').textContent = f ? `환율 ${f.toLocaleString()}원/$ ${D.fxManual?'(수동)':'(자동)'}` : '환율 -';
 }
 
-function renderTable(tab){
-  const tb = document.querySelector(`#tbl-${tab} tbody`);
-  const tf = document.querySelector(`#tbl-${tab} tfoot`);
+/* view: buyKR / buyUS / sellKRq / sellKRa / sellUSq / sellUSa — 전부 D.kr 또는 D.us 공유 */
+const VIEWS = {buyKR:'kr', buyUS:'us', sellKRq:'kr', sellKRa:'kr', sellUSq:'us', sellUSa:'us'};
+function renderView(view){
+  const m = VIEWS[view];
+  const rows = D[m];
+  const tb = document.querySelector(`#tbl-${view} tbody`);
+  const tf = document.querySelector(`#tbl-${view} tfoot`);
   if(!tb) return;
   const F = fx();
   let html='', foot='';
-  const rows = D[tab];
 
-  if(tab==='buyKR'){
+  if(view==='buyKR'){
     let tAmt=0,tUse=0;
     rows.forEach((r,i)=>{
-      const p=price(r), amt=Number(r.amount)||0;
+      const p=price(r), amt=Number(r.buyAmount)||0;
       const shares = (p&&amt)?Math.floor(amt/p):null;
       const use = shares!=null?shares*p:null, rem = use!=null?amt-use:null;
       if(amt)tAmt+=amt; if(use)tUse+=use;
-      html+=`<tr><td>${inp('name',r.name,'종목명',h(tab,i,'name'))}</td><td>${inp('tick',r.code,'종목번호',h(tab,i,'code'))}</td>
-      <td>${numIn('blue num',r.amount,h(tab,i,'amount'),1)}</td>
+      html+=`<tr><td>${inp('name',r.name,'종목명',h(m,i,'name',view))}</td><td>${inp('tick',r.code,'종목번호',h(m,i,'code',view))}</td>
+      <td>${numIn('blue num',r.buyAmount,h(m,i,'buyAmount',view),1)}</td>
       <td class="auto">${r.auto?fmtKRW(r.auto):'-'}</td>
-      <td>${numIn('blue price',r.manual,h(tab,i,'manual'))}</td>
+      <td>${numIn('blue price',r.manual,h(m,i,'manual',view))}</td>
       <td>${p?fmtKRW(p):'-'}</td><td class="green">${fmtNum(shares)}</td>
-      <td>${fmtKRW(use)}</td><td class="red">${fmtKRW(rem)}</td><td>${delBtn(tab,i)}</td></tr>`;
+      <td>${fmtKRW(use)}</td><td class="red">${fmtKRW(rem)}</td><td>${delBtn(m,i)}</td></tr>`;
     });
     foot=`<tr><td colspan="2">합계</td><td>${fmtKRW(tAmt)}</td><td colspan="4"></td><td>${fmtKRW(tUse)}</td><td colspan="2"></td></tr>`;
   }
 
-  if(tab==='buyUS'){
+  if(view==='buyUS'){
     rows.forEach((r,i)=>{
-      const p=price(r), amt=Number(r.amount)||0;
-      const usd = r.cur==='USD' ? amt : (F?amt/F:null);
+      const p=price(r), amt=Number(r.buyAmount)||0;
+      const usd = r.buyCur==='USD' ? amt : (F?amt/F:null);
       const shares = (p&&usd)?Math.floor(usd/p):null;
       const useU = shares!=null?shares*p:null, remU = useU!=null?usd-useU:null;
-      html+=`<tr><td>${inp('name',r.name,'종목명',h(tab,i,'name'))}</td><td>${inp('tick',r.code,'티커',h(tab,i,'code'))}</td>
-      <td>${numIn('blue num',r.amount,h(tab,i,'amount'))}</td>
-      <td><select onchange="upd('${tab}',${i},'cur',this.value)"><option ${r.cur==='KRW'?'selected':''}>KRW</option><option ${r.cur==='USD'?'selected':''}>USD</option></select></td>
+      html+=`<tr><td>${inp('name',r.name,'종목명',h(m,i,'name',view))}</td><td>${inp('tick',r.code,'티커',h(m,i,'code',view))}</td>
+      <td>${numIn('blue num',r.buyAmount,h(m,i,'buyAmount',view))}</td>
+      <td><select onchange="upd('${m}',${i},'buyCur','${view}',this.value)"><option ${r.buyCur==='KRW'?'selected':''}>KRW</option><option ${r.buyCur==='USD'?'selected':''}>USD</option></select></td>
       <td>${usd!=null?fmtUSD(usd):'-'}<span class="subkrw">${usd!=null&&F?fmtKRW(usd*F):''}</span></td>
       <td class="auto">${r.auto?fmtUSD(r.auto):'-'}</td>
-      <td>${numIn('blue price',r.manual,h(tab,i,'manual'),0.01)}</td>
+      <td>${numIn('blue price',r.manual,h(m,i,'manual',view),0.01)}</td>
       <td>${p?fmtUSD(p):'-'}</td><td class="green">${fmtNum(shares)}</td>
       <td>${fmtUSD(useU)}<span class="subkrw">${useU!=null&&F?fmtKRW(useU*F):''}</span></td>
-      <td class="red">${fmtUSD(remU)}</td><td>${delBtn(tab,i)}</td></tr>`;
+      <td class="red">${fmtUSD(remU)}</td><td>${delBtn(m,i)}</td></tr>`;
     });
   }
 
-  if(tab==='sellKRq'||tab==='sellUSq'){
-    const US = tab==='sellUSq', fm = US?fmtUSD:fmtKRW;
+  if(view==='sellKRq'||view==='sellUSq'){
+    const US = view==='sellUSq', fm = US?fmtUSD:fmtKRW;
     let tSell=0;
     rows.forEach((r,i)=>{
-      const p=price(r), qty=Number(r.qty)||0, cost=Number(r.cost)||0;
+      const p=price(r), qty=Number(r.sellQty)||0, cost=Number(r.cost)||0;
       const sellAmt=(p&&qty)?qty*p:null;
       const pl=(p&&cost&&qty)?(p-cost)*qty:null;
       const rt=(p&&cost)?(p-cost)/cost*100:null;
       if(sellAmt)tSell+=sellAmt;
-      html+=`<tr><td>${inp('name',r.name,'종목명',h(tab,i,'name'))}</td><td>${inp('tick',r.code,US?'티커':'종목번호',h(tab,i,'code'))}</td>
-      <td>${numIn('num',r.hold,h(tab,i,'hold'),1)}</td>
-      <td>${numIn('blue num',r.qty,h(tab,i,'qty'),1)}</td>
+      const over = qty && Number(r.hold) && qty>Number(r.hold);
+      html+=`<tr><td>${inp('name',r.name,'종목명',h(m,i,'name',view))}</td><td>${inp('tick',r.code,US?'티커':'종목번호',h(m,i,'code',view))}</td>
+      <td>${numIn('num',r.hold,h(m,i,'hold',view),1)}</td>
+      <td>${numIn('blue num',r.sellQty,h(m,i,'sellQty',view),1)}${over?'<span class="subkrw red">⚠️보유초과</span>':''}</td>
       <td class="auto">${r.auto?fm(r.auto):'-'}</td>
-      <td>${numIn('blue price',r.manual,h(tab,i,'manual'),US?0.01:1)}</td>
+      <td>${numIn('blue price',r.manual,h(m,i,'manual',view),US?0.01:1)}</td>
       <td>${p?fm(p):'-'}</td>
       <td class="green">${fm(sellAmt)}${US&&sellAmt&&F?`<span class="subkrw">${fmtKRW(sellAmt*F)}</span>`:''}</td>
-      <td>${numIn('blue price',r.cost,h(tab,i,'cost'),US?0.01:1)}</td>
+      <td>${numIn('blue price',r.cost,h(m,i,'cost',view),US?0.01:1)}</td>
       <td class="${pl>0?'pos':pl<0?'neg':''}">${fm(pl)}${US&&pl&&F?`<span class="subkrw">${fmtKRW(pl*F)}</span>`:''}</td>
       <td class="${rt>0?'pos':rt<0?'neg':''}">${rt!=null?rt.toFixed(2)+'%':'-'}</td>
-      <td>${delBtn(tab,i)}</td></tr>`;
+      <td>${delBtn(m,i)}</td></tr>`;
     });
     foot=`<tr><td colspan="7">매도 예상금액 합계</td><td>${fm(tSell)}${US&&F&&tSell?`<span class="subkrw">${fmtKRW(tSell*F)}</span>`:''}</td><td colspan="4"></td></tr>`;
   }
 
-  if(tab==='sellKRa'){
+  if(view==='sellKRa'){
     rows.forEach((r,i)=>{
       const p=price(r), tgt=Number(r.target)||0, hold=Number(r.hold)||0;
       const need=(p&&tgt)?Math.ceil(tgt/p):null;
       const real=need!=null?need*p:null, rem=need!=null?hold-need:null;
-      html+=`<tr><td>${inp('name',r.name,'종목명',h(tab,i,'name'))}</td><td>${inp('tick',r.code,'종목번호',h(tab,i,'code'))}</td>
-      <td>${numIn('blue num',r.target,h(tab,i,'target'),1)}</td>
+      html+=`<tr><td>${inp('name',r.name,'종목명',h(m,i,'name',view))}</td><td>${inp('tick',r.code,'종목번호',h(m,i,'code',view))}</td>
+      <td>${numIn('blue num',r.target,h(m,i,'target',view),1)}</td>
       <td class="auto">${r.auto?fmtKRW(r.auto):'-'}</td>
-      <td>${numIn('blue price',r.manual,h(tab,i,'manual'))}</td>
+      <td>${numIn('blue price',r.manual,h(m,i,'manual',view))}</td>
       <td>${p?fmtKRW(p):'-'}</td><td class="green">${fmtNum(need)}</td><td>${fmtKRW(real)}</td>
-      <td>${numIn('num',r.hold,h(tab,i,'hold'),1)}</td>
-      <td class="${rem<0?'red':''}">${fmtNum(rem)}${rem<0?' ⚠️보유부족':''}</td><td>${delBtn(tab,i)}</td></tr>`;
+      <td>${numIn('num',r.hold,h(m,i,'hold',view),1)}</td>
+      <td class="${rem<0?'red':''}">${fmtNum(rem)}${rem<0?' ⚠️보유부족':''}</td><td>${delBtn(m,i)}</td></tr>`;
     });
   }
 
-  if(tab==='sellUSa'){
+  if(view==='sellUSa'){
     rows.forEach((r,i)=>{
       const p=price(r), tgt=Number(r.target)||0, hold=Number(r.hold)||0;
-      const tgtU = r.cur==='USD'?tgt:(F?tgt/F:null);
+      const tgtU = r.targetCur==='USD'?tgt:(F?tgt/F:null);
       const need=(p&&tgtU)?Math.ceil(tgtU/p):null;
       const real=need!=null?need*p:null, rem=need!=null?hold-need:null;
-      html+=`<tr><td>${inp('name',r.name,'종목명',h(tab,i,'name'))}</td><td>${inp('tick',r.code,'티커',h(tab,i,'code'))}</td>
-      <td>${numIn('blue num',r.target,h(tab,i,'target'))}</td>
-      <td><select onchange="upd('${tab}',${i},'cur',this.value)"><option ${r.cur==='KRW'?'selected':''}>KRW</option><option ${r.cur==='USD'?'selected':''}>USD</option></select></td>
+      html+=`<tr><td>${inp('name',r.name,'종목명',h(m,i,'name',view))}</td><td>${inp('tick',r.code,'티커',h(m,i,'code',view))}</td>
+      <td>${numIn('blue num',r.target,h(m,i,'target',view))}</td>
+      <td><select onchange="upd('${m}',${i},'targetCur','${view}',this.value)"><option ${r.targetCur==='KRW'?'selected':''}>KRW</option><option ${r.targetCur==='USD'?'selected':''}>USD</option></select></td>
       <td>${tgtU!=null?fmtUSD(tgtU):'-'}</td>
       <td class="auto">${r.auto?fmtUSD(r.auto):'-'}</td>
-      <td>${numIn('blue price',r.manual,h(tab,i,'manual'),0.01)}</td>
+      <td>${numIn('blue price',r.manual,h(m,i,'manual',view),0.01)}</td>
       <td>${p?fmtUSD(p):'-'}</td><td class="green">${fmtNum(need)}</td>
       <td>${fmtUSD(real)}<span class="subkrw">${real!=null&&F?fmtKRW(real*F):''}</span></td>
-      <td>${numIn('num',r.hold,h(tab,i,'hold'),1)}</td>
-      <td class="${rem<0?'red':''}">${fmtNum(rem)}${rem<0?' ⚠️보유부족':''}</td><td>${delBtn(tab,i)}</td></tr>`;
+      <td>${numIn('num',r.hold,h(m,i,'hold',view),1)}</td>
+      <td class="${rem<0?'red':''}">${fmtNum(rem)}${rem<0?' ⚠️보유부족':''}</td><td>${delBtn(m,i)}</td></tr>`;
     });
   }
 
   tb.innerHTML = html || `<tr><td colspan="12" style="text-align:center;color:var(--sub)">종목이 없습니다 — [＋ 종목 추가]를 누르세요</td></tr>`;
   if(tf) tf.innerHTML = foot;
 }
-const ALL_TABS=['buyKR','buyUS','sellKRq','sellKRa','sellUSq','sellUSa'];
-function renderAll(){ renderFx(); ALL_TABS.forEach(renderTable); }
+function renderAll(){ renderFx(); Object.keys(VIEWS).forEach(renderView); }
 
 /* ================= 이벤트 ================= */
-function upd(tab,i,f,v){
-  const r = D[tab][i];
-  if(['amount','manual','qty','hold','cost','target'].includes(f)) r[f] = v===''?null:Number(v);
+function upd(m,i,f,view,v){
+  const r = D[m][i];
+  if(['buyAmount','manual','sellQty','hold','cost','target'].includes(f)) r[f] = v===''?null:Number(v);
   else r[f]=v;
   save();
-  // 재렌더(입력 포커스 유지 위해 해당 테이블만, 디바운스)
-  clearTimeout(upd._t); upd._t=setTimeout(()=>{ renderCalc(tab); },400);
+  clearTimeout(upd._t); upd._t=setTimeout(()=>{
+    // 같은 종목을 쓰는 모든 뷰 갱신 (입력 중인 표는 blur 후)
+    for(const vw of Object.keys(VIEWS)){
+      if(VIEWS[vw]!==m) continue;
+      const tbl=document.getElementById('tbl-'+vw);
+      if(tbl && tbl.contains(document.activeElement)){
+        document.activeElement.addEventListener('blur',()=>renderView(vw),{once:true});
+      } else renderView(vw);
+    }
+  },400);
 }
-function renderCalc(tab){
-  // 입력 중 포커스 잃지 않도록: 포커스가 테이블 안이면 blur 시 재렌더
-  const tbl=document.getElementById('tbl-'+tab);
-  if(tbl && tbl.contains(document.activeElement)){
-    document.activeElement.addEventListener('blur',()=>renderTable(tab),{once:true});
-  } else renderTable(tab);
+function addRow(m){ D[m].push(newStock(m)); save(); Object.keys(VIEWS).forEach(v=>{ if(VIEWS[v]===m) renderView(v); }); }
+function delRow(m,i){
+  const r=D[m][i];
+  if(!confirm(`'${r.name||r.code||'이 종목'}'을(를) 매수·매도 모든 탭에서 삭제할까요?`)) return;
+  D[m].splice(i,1); save();
+  Object.keys(VIEWS).forEach(v=>{ if(VIEWS[v]===m) renderView(v); });
 }
-function addRow(tab){ D[tab].push(emptyRow[tab]()); save(); renderTable(tab); }
-function delRow(tab,i){ D[tab].splice(i,1); save(); renderTable(tab); }
-function resetTab(tab){
-  if(tab==='buyKR'||tab==='buyUS'){ if(!confirm('이 표를 초기화할까요?'))return; D[tab]=[emptyRow[tab]()]; }
-  else { if(!confirm('이 표를 초기화할까요?'))return; D[tab]=[emptyRow[tab]()]; }
-  save(); renderTable(tab);
+function clearInputs(m,kind){
+  const label = kind==='buy'?'투자금액':kind==='sellq'?'매도주수':'목표금액';
+  if(!confirm(`${label}을(를) 모두 지울까요? (종목은 유지됩니다)`)) return;
+  D[m].forEach(r=>{
+    if(kind==='buy') r.buyAmount=null;
+    else if(kind==='sellq') r.sellQty=null;
+    else r.target=null;
+  });
+  save();
+  Object.keys(VIEWS).forEach(v=>{ if(VIEWS[v]===m) renderView(v); });
 }
 function setSellMode(group,mode,btn){
   document.getElementById(group+'-qty').style.display = mode==='qty'?'':'none';
@@ -504,12 +509,13 @@ document.getElementById('btnPrices').onclick=syncAllPrices;
 document.getElementById('btnFx').onclick=syncFx;
 
 /* ================= 시작 ================= */
-D = loadLocal(); normalize();
+D = loadLocal();
 renderAll();
 initFirebase();
 const savedTab = localStorage.getItem('jjStockTab')||'buyKR';
 (document.querySelector(`.tabs button[data-tab="${savedTab}"]`) || document.querySelector('.tabs button')).click();
 syncAllPrices();
+/* v2 - 매수·매도 동일 종목 공유 */
 </script>
 </body>
 </html>
