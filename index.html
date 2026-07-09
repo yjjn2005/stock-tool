@@ -117,7 +117,7 @@
   <div id="sellKR-qty">
     <div class="hint">매도 주수 × 현재가 = 매도 예상금액. 취득단가 입력 시 평가손익·수익률 표시. 종목은 매수 국내 탭과 동일.</div>
     <div class="tblwrap"><table id="tbl-sellKRq">
-      <thead><tr><th>종목명</th><th>종목번호</th><th>보유 주수</th><th>매도 주수</th><th>자동 현재가</th><th>수동 현재가</th><th>적용가</th><th>매도 예상금액</th><th>취득단가</th><th>평가손익</th><th>수익률</th><th></th></tr></thead>
+      <thead><tr><th>종목명</th><th>종목번호</th><th>현재 보유주수</th><th>매도할 수량</th><th>매도후 잔량</th><th>자동 현재가</th><th>수동 현재가</th><th>적용가</th><th>매도금액 (원)</th><th>취득단가</th><th>평가손익</th><th>수익률</th><th></th></tr></thead>
       <tbody></tbody><tfoot></tfoot>
     </table></div>
     <div class="rowbtns"><button class="small" onclick="addRow('kr')">＋ 종목 추가</button><button class="small ghost" onclick="clearInputs('kr','sellq')">🗑 매도주수 초기화</button></div>
@@ -142,7 +142,7 @@
   <div id="sellUS-qty">
     <div class="hint">매도 주수 × 현재가($) = 매도 예상금액. 달러·원화 동시 표시. 종목은 매수 해외 탭과 동일.</div>
     <div class="tblwrap"><table id="tbl-sellUSq">
-      <thead><tr><th>종목명</th><th>티커</th><th>보유 주수</th><th>매도 주수</th><th>자동 현재가($)</th><th>수동 현재가($)</th><th>적용가($)</th><th>매도 예상금액</th><th>취득단가($)</th><th>평가손익</th><th>수익률</th><th></th></tr></thead>
+      <thead><tr><th>종목명</th><th>티커</th><th>현재 보유주수</th><th>매도할 수량</th><th>매도후 잔량</th><th>자동 현재가($)</th><th>수동 현재가($)</th><th>적용가($)</th><th>매도금액 ($)</th><th>매도금액 (원)</th><th>취득단가($)</th><th>평가손익</th><th>수익률</th><th></th></tr></thead>
       <tbody></tbody><tfoot></tfoot>
     </table></div>
     <div class="rowbtns"><button class="small" onclick="addRow('us')">＋ 종목 추가</button><button class="small ghost" onclick="clearInputs('us','sellq')">🗑 매도주수 초기화</button></div>
@@ -400,25 +400,28 @@ function renderView(view){
     const US = view==='sellUSq', fm = US?fmtUSD:fmtKRW;
     let tSell=0;
     rows.forEach((r,i)=>{
-      const p=price(r), qty=Number(r.sellQty)||0, cost=Number(r.cost)||0;
+      const p=price(r), qty=Number(r.sellQty)||0, cost=Number(r.cost)||0, hold=Number(r.hold)||0;
       const sellAmt=(p&&qty)?qty*p:null;
+      const remain=(r.hold!=null&&r.hold!=='')?hold-qty:null;
       const pl=(p&&cost&&qty)?(p-cost)*qty:null;
       const rt=(p&&cost)?(p-cost)/cost*100:null;
       if(sellAmt)tSell+=sellAmt;
-      const over = qty && Number(r.hold) && qty>Number(r.hold);
+      const over = qty && hold && qty>hold;
       html+=`<tr><td>${inp('name',r.name,'종목명',h(m,i,'name',view))}</td><td>${inp('tick',r.code,US?'티커':'종목번호',h(m,i,'code',view))}</td>
       <td>${numIn('num',r.hold,h(m,i,'hold',view),1)}</td>
       <td>${numIn('blue num',r.sellQty,h(m,i,'sellQty',view),1)}${over?'<span class="subkrw red">⚠️보유초과</span>':''}</td>
+      <td class="${remain<0?'red':''}">${fmtNum(remain)}${remain<0?' ⚠️':''}</td>
       <td class="auto">${r.auto?fm(r.auto):'-'}</td>
       <td>${numIn('blue price',r.manual,h(m,i,'manual',view),US?0.01:1)}</td>
       <td>${p?fm(p):'-'}</td>
-      <td class="green">${fm(sellAmt)}${US&&sellAmt&&F?`<span class="subkrw">${fmtKRW(sellAmt*F)}</span>`:''}</td>
+      <td class="green">${fm(sellAmt)}</td>
+      ${US?`<td class="green">${sellAmt!=null&&F?fmtKRW(sellAmt*F):'-'}</td>`:''}
       <td>${numIn('blue price',r.cost,h(m,i,'cost',view),US?0.01:1)}</td>
       <td class="${pl>0?'pos':pl<0?'neg':''}">${fm(pl)}${US&&pl&&F?`<span class="subkrw">${fmtKRW(pl*F)}</span>`:''}</td>
       <td class="${rt>0?'pos':rt<0?'neg':''}">${rt!=null?rt.toFixed(2)+'%':'-'}</td>
       <td>${delBtn(m,i)}</td></tr>`;
     });
-    foot=`<tr><td colspan="7">매도 예상금액 합계</td><td>${fm(tSell)}${US&&F&&tSell?`<span class="subkrw">${fmtKRW(tSell*F)}</span>`:''}</td><td colspan="4"></td></tr>`;
+    foot=`<tr><td colspan="8">매도금액 합계</td><td>${fm(tSell)}</td>${US?`<td>${F&&tSell?fmtKRW(tSell*F):'-'}</td>`:''}<td colspan="4"></td></tr>`;
   }
 
   if(view==='sellKRa'){
