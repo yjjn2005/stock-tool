@@ -340,7 +340,7 @@ async function syncAllPrices(){
 function inp(cls, val, ph, on){ return `<input class="${cls}" value="${val??''}" placeholder="${ph||''}" ${on}>`; }
 function numIn(cls, val, on, step){ return `<input type="number" class="${cls}" value="${val??''}" step="${step||'any'}" ${on}>`; }
 function delBtn(m,i){ return `<button class="danger" title="모든 탭에서 삭제" onclick="delRow('${m}',${i})">✕</button>`; }
-function h(m,i,f,view){ return `oninput="upd('${m}',${i},'${f}','${view}',this.value)"`; }
+function h(m,i,f,view){ return `oninput="upd('${m}',${i},'${f}','${view}',this.value,this)"`; }
 
 function renderFx(){
   document.getElementById('fxAuto').textContent = D.fxAuto ? D.fxAuto.toLocaleString() : '-';
@@ -464,14 +464,32 @@ function renderView(view){
 function renderAll(){ renderFx(); Object.keys(VIEWS).forEach(renderView); }
 
 /* ================= 이벤트 ================= */
-function upd(m,i,f,view,v){
+function upd(m,i,f,view,v,el){
   const r = D[m][i];
+  const sib = (dir)=>{ // 같은 행의 옆 칸 input
+    if(!el) return null;
+    const td = el.closest('td'); if(!td) return null;
+    const t = dir==='prev' ? td.previousElementSibling : td.nextElementSibling;
+    return t ? t.querySelector('input') : null;
+  };
   if(f==='remainQty'){
-    // 매도후 잔량 입력 → 매도수량 = 보유주수 − 잔량 자동 계산
+    // 매도후 잔량 입력 → 매도수량 = 보유주수 − 잔량 (즉시 반영)
     const hold = Number(r.hold)||0;
     r.sellQty = v===''?null:Math.max(0, hold - Number(v));
+    const q = sib('prev');
+    if(q && q!==document.activeElement) q.value = r.sellQty ?? '';
   }
-  else if(['buyAmount','manual','sellQty','hold','cost','target'].includes(f)) r[f] = v===''?null:Number(v);
+  else if(['buyAmount','manual','sellQty','hold','cost','target'].includes(f)){
+    r[f] = v===''?null:Number(v);
+    if(f==='sellQty'){
+      // 매도수량 입력 → 잔량 칸 즉시 반영
+      const n = sib('next');
+      if(n && n!==document.activeElement){
+        const hold = Number(r.hold)||0;
+        n.value = (r.hold!=null && r.sellQty!=null) ? hold - Number(r.sellQty) : '';
+      }
+    }
+  }
   else r[f]=v;
   save();
   clearTimeout(upd._t); upd._t=setTimeout(()=>{
