@@ -69,6 +69,7 @@
   </div>
   <button id="btnPrices">🔄 전체 시세 동기화</button>
   <button class="ghost" id="btnFx">환율만 갱신</button>
+  <button class="ghost" id="btnReset" style="border-color:var(--red);color:var(--red)">🗑 입력 초기화</button>
   <span class="hint" id="lastSync" style="margin:0;"></span>
 </div>
 
@@ -521,6 +522,12 @@ function clearInputs(m,kind){
   save();
   Object.keys(VIEWS).forEach(v=>{ if(VIEWS[v]===m) renderView(v); });
 }
+function resetAllInputs(){
+  if(!confirm('모든 입력값을 지울까요?\n· 투자금액 / 매도수량 / 목표금액 / 수동 현재가 / 수동 환율\n(종목·보유주수·취득단가는 유지됩니다)')) return;
+  ['kr','us'].forEach(m=>D[m].forEach(r=>{ r.buyAmount=null; r.sellQty=null; r.target=null; r.manual=null; }));
+  D.fxManual=null;
+  save(); renderAll(); toast('입력값이 초기화되었습니다');
+}
 function setSellMode(group,mode,btn){
   document.getElementById(group+'-qty').style.display = mode==='qty'?'':'none';
   document.getElementById(group+'-amt').style.display = mode==='amt'?'':'none';
@@ -540,6 +547,7 @@ document.getElementById('fxManual').addEventListener('input',e=>{
 });
 document.getElementById('btnPrices').onclick=syncAllPrices;
 document.getElementById('btnFx').onclick=syncFx;
+document.getElementById('btnReset').onclick=resetAllInputs;
 
 /* ================= 시작 ================= */
 D = loadLocal();
