@@ -161,6 +161,20 @@
 <div class="hint" style="text-align:center">※ 매수·매도 모든 탭이 동일 종목 목록 공유 · 수수료·세금 미반영 · 시세: Yahoo Finance → 네이버증권 순 · 자동 조회 실패 시 수동 현재가 입력</div>
 <div id="toast"></div>
 
+<!-- 초기화 범위 선택 모달 -->
+<div id="resetModal" style="display:none; position:fixed; inset:0; background:#000a; z-index:98; align-items:center; justify-content:center;">
+  <div style="background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; max-width:420px; width:92%;">
+    <h3 style="margin-bottom:6px;">🗑 초기화 범위 선택</h3>
+    <div class="hint" style="margin-bottom:14px;">어디까지 초기화할까요? (모든 기기에 동기화됩니다)</div>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button onclick="doReset(1)">① 입력값만 — 투자금액·매도수량·목표금액·수동현재가·수동환율</button>
+      <button onclick="doReset(2)" style="background:#7a5c1e;">② 입력값 + 보유주수·취득단가</button>
+      <button onclick="doReset(3)" style="background:transparent; border:1px solid var(--red); color:var(--red);">③ 전체 초기화 — 종목 목록까지 모두 삭제</button>
+      <button class="ghost" onclick="document.getElementById('resetModal').style.display='none'">취소</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
@@ -523,10 +537,24 @@ function clearInputs(m,kind){
   Object.keys(VIEWS).forEach(v=>{ if(VIEWS[v]===m) renderView(v); });
 }
 function resetAllInputs(){
-  if(!confirm('모든 입력값을 지울까요?\n· 투자금액 / 매도수량 / 목표금액 / 수동 현재가 / 수동 환율\n(종목·보유주수·취득단가는 유지됩니다)')) return;
-  ['kr','us'].forEach(m=>D[m].forEach(r=>{ r.buyAmount=null; r.sellQty=null; r.target=null; r.manual=null; }));
+  document.getElementById('resetModal').style.display='flex';
+}
+function doReset(level){
+  document.getElementById('resetModal').style.display='none';
+  if(level===3){
+    if(!confirm('정말 모든 종목을 삭제할까요? 되돌릴 수 없습니다.')) return;
+    D.kr=[newStock('kr')]; D.us=[newStock('us')];
+    D.fxManual=null;
+    save(); renderAll(); toast('전체 초기화 완료 — 종목이 모두 삭제되었습니다');
+    return;
+  }
+  ['kr','us'].forEach(m=>D[m].forEach(r=>{
+    r.buyAmount=null; r.sellQty=null; r.target=null; r.manual=null;
+    if(level===2){ r.hold=null; r.cost=null; }
+  }));
   D.fxManual=null;
-  save(); renderAll(); toast('입력값이 초기화되었습니다');
+  save(); renderAll();
+  toast(level===2 ? '입력값·보유주수·취득단가 초기화 완료' : '입력값이 초기화되었습니다');
 }
 function setSellMode(group,mode,btn){
   document.getElementById(group+'-qty').style.display = mode==='qty'?'':'none';
