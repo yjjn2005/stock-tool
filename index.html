@@ -115,7 +115,7 @@
     <button data-sub="amt" onclick="setSellMode('sellKR','amt',this)">금액 기준</button>
   </div>
   <div id="sellKR-qty">
-    <div class="hint">매도 주수 × 현재가 = 매도 예상금액. 취득단가 입력 시 평가손익·수익률 표시. 종목은 매수 국내 탭과 동일.</div>
+    <div class="hint">매도할 수량을 입력하거나, 매도후 잔량을 입력하면 매도수량이 자동 계산됩니다 (매도수량 = 보유주수 − 잔량). 취득단가 입력 시 평가손익·수익률 표시.</div>
     <div class="tblwrap"><table id="tbl-sellKRq">
       <thead><tr><th>종목명</th><th>종목번호</th><th>현재 보유주수</th><th>매도할 수량</th><th>매도후 잔량</th><th>자동 현재가</th><th>수동 현재가</th><th>적용가</th><th>매도금액 (원)</th><th>취득단가</th><th>평가손익</th><th>수익률</th><th></th></tr></thead>
       <tbody></tbody><tfoot></tfoot>
@@ -140,7 +140,7 @@
     <button data-sub="amt" onclick="setSellMode('sellUS','amt',this)">금액 기준</button>
   </div>
   <div id="sellUS-qty">
-    <div class="hint">매도 주수 × 현재가($) = 매도 예상금액. 달러·원화 동시 표시. 종목은 매수 해외 탭과 동일.</div>
+    <div class="hint">매도할 수량 또는 매도후 잔량 중 하나만 입력하면 나머지가 자동 계산됩니다. 매도금액은 달러·원화 동시 표시.</div>
     <div class="tblwrap"><table id="tbl-sellUSq">
       <thead><tr><th>종목명</th><th>티커</th><th>현재 보유주수</th><th>매도할 수량</th><th>매도후 잔량</th><th>자동 현재가($)</th><th>수동 현재가($)</th><th>적용가($)</th><th>매도금액 ($)</th><th>매도금액 (원)</th><th>취득단가($)</th><th>평가손익</th><th>수익률</th><th></th></tr></thead>
       <tbody></tbody><tfoot></tfoot>
@@ -410,7 +410,7 @@ function renderView(view){
       html+=`<tr><td>${inp('name',r.name,'종목명',h(m,i,'name',view))}</td><td>${inp('tick',r.code,US?'티커':'종목번호',h(m,i,'code',view))}</td>
       <td>${numIn('num',r.hold,h(m,i,'hold',view),1)}</td>
       <td>${numIn('blue num',r.sellQty,h(m,i,'sellQty',view),1)}${over?'<span class="subkrw red">⚠️보유초과</span>':''}</td>
-      <td class="${remain<0?'red':''}">${fmtNum(remain)}${remain<0?' ⚠️':''}</td>
+      <td>${numIn('blue num',remain,h(m,i,'remainQty',view),1)}${remain<0?'<span class="subkrw red">⚠️</span>':''}</td>
       <td class="auto">${r.auto?fm(r.auto):'-'}</td>
       <td>${numIn('blue price',r.manual,h(m,i,'manual',view),US?0.01:1)}</td>
       <td>${p?fm(p):'-'}</td>
@@ -466,7 +466,12 @@ function renderAll(){ renderFx(); Object.keys(VIEWS).forEach(renderView); }
 /* ================= 이벤트 ================= */
 function upd(m,i,f,view,v){
   const r = D[m][i];
-  if(['buyAmount','manual','sellQty','hold','cost','target'].includes(f)) r[f] = v===''?null:Number(v);
+  if(f==='remainQty'){
+    // 매도후 잔량 입력 → 매도수량 = 보유주수 − 잔량 자동 계산
+    const hold = Number(r.hold)||0;
+    r.sellQty = v===''?null:Math.max(0, hold - Number(v));
+  }
+  else if(['buyAmount','manual','sellQty','hold','cost','target'].includes(f)) r[f] = v===''?null:Number(v);
   else r[f]=v;
   save();
   clearTimeout(upd._t); upd._t=setTimeout(()=>{
